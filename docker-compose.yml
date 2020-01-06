@@ -1,0 +1,38 @@
+version: "3.3"
+services:
+  app:
+    build:
+      context: .
+    restart: on-failure
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/opt/app
+    command: >
+      bash -c "python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - docker-compose.env
+    depends_on:
+      - mysql
+      - data_stream
+
+  data_stream:
+    build:
+      context: .
+    restart: on-failure
+    volumes:
+      - .:/opt/app
+    env_file:
+      - docker-compose.env
+    command: >
+      bash -c "python manage.py runscript tasks -v2"
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:5.7
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --init-connect='SET NAMES UTF8;' --innodb-flush-log-at-trx-commit=0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cashcog
+

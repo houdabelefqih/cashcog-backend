@@ -9,11 +9,18 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
-
+import dj_database_url
 import os
-
+import sys
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+def project_base(f=""):
+    return os.path.join(BASE_DIR, f)
+
+
+sys.path.insert(1, project_base())
+sys.path.insert(0, project_base("cashcog/"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -39,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'graphene_django',
+    'django_extensions',
     'cashcog',
     'expenses',
     'employees',
@@ -57,6 +65,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'cashcog.urls'
+
+DATABASE_URL="mysql://root:root@mysql:3306/cashcog"
+
 
 TEMPLATES = [
     {
@@ -79,13 +90,12 @@ WSGI_APPLICATION = 'cashcog.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+default_db = dj_database_url.parse(DATABASE_URL)
+default_db["OPTIONS"] = {"sql_mode": "traditional"}
+
+DATABASES = {"default": default_db}
 
 
 # Password validation
@@ -135,3 +145,7 @@ AUTHENTICATION_BACKENDS = [
     'graphql_jwt.backends.JSONWebTokenBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+
+
+

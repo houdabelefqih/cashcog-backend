@@ -1,7 +1,7 @@
 import graphene
 from graphene_django import DjangoObjectType
 
-from expenses.models import Expense
+from .models import Expense
 from employees.schema import EmployeeType
 
 
