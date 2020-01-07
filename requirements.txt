@@ -3,7 +3,6 @@ graphene-django==2.2.0
 django-filter==2.0.0
 django-graphql-jwt==0.1.5
 django-model-utils==4.0.0
-pycurl==7.43.0.3
 djangorestframework==3.11.0
 psycopg2==2.8.4
 django-extensions==2.2.5

@@ -1,16 +1,24 @@
 from .models import Employee
 import graphene
+import django_filters
 from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
 
 
-class EmployeeType(DjangoObjectType):
+class EmployeeFilter(django_filters.FilterSet):
     class Meta:
         model = Employee
+        fields = {'first_name': ['exact', 'icontains', 'istartswith'],
+                  'last_name': ['exact', 'icontains', 'istartswith'],
+                  'uuid': ['exact']}
 
 
-class Query(graphene.AbstractType):
-    employees = graphene.List(EmployeeType)
+class EmployeeNode(DjangoObjectType):
+    class Meta:
+        model = Employee
+        interfaces = (graphene.relay.Node,)
 
-    def resolve_employees(self, info):
-        return Employee.objects.all()
 
+class Query(graphene.ObjectType):
+    employee = graphene.relay.Node.Field(EmployeeNode)
+    employees = DjangoFilterConnectionField(EmployeeNode, filterset_class=EmployeeFilter)
