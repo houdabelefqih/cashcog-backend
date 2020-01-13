@@ -14,9 +14,9 @@ It also provides a Graph-QL API allowing clients to fetch, update (approve or de
 
 ### Graphql queries examples:
 
-####Access : localhost:8000/cashcog/####
+#### Access API via: localhost:8000/cashcog/ ####
 
-Either using a browser (which will show the GraphiQL interface) or using your favorite REST/GraphQL client.
+Either using a browser (which will redirect to the GraphiQL interface) or using your favorite REST/GraphQL client.
 
 #### Expenses:
 
