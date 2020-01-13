@@ -21,4 +21,3 @@ for line in r.iter_lines():
             defaults={**data, 'employee': employee_obj}
         )
 
-

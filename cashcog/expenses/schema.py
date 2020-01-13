@@ -5,20 +5,20 @@ from graphene_django.filter import DjangoFilterConnectionField
 from graphql import GraphQLError
 
 from .models import Expense
-from employees.schema import EmployeeNode, EmployeeFilter
 
 
 class ExpenseFilter(django_filters.FilterSet):
+
     class Meta:
         model = Expense
         fields = {'uuid': ['exact'],
                   'description': ['iexact', 'icontains'],
-                  'created_at': ['exact', 'date', 'year', 'month', 'day', 'time', 'hour'],
-                  'amount': ['exact', 'gt', 'gte', 'lt','lte'],
+                  'created_at': ['date', 'week_day','year', 'month', 'day', 'time', 'hour'],
+                  'amount': ['exact', 'gt', 'gte', 'lt', 'lte'],
                   'currency': ['iexact', 'icontains'],
-                  'approved': ['iexact'],
-
+                  'status': ['iexact'],
                   }
+
         interfaces = [graphene.relay.Node, ]
 
 
@@ -33,20 +33,17 @@ class Query(graphene.ObjectType):
     expenses = DjangoFilterConnectionField(ExpenseNode, filterset_class=ExpenseFilter)
 
 
-class ExpenseMutation(graphene.Mutation):
-    uuid = graphene.UUID()
-    description = graphene.String()
-    created_at = graphene.DateTime()
-    amount = graphene.Decimal()
-    currency = graphene.String()
-    employee = graphene.Field(EmployeeNode)
-    approved = graphene.Boolean()
+class ExpenseMutation(graphene.relay.ClientIDMutation):
+    class Input:
+        uuid = graphene.UUID(required=True)
+        status = graphene.String(required=True)
 
-    class Arguments:
-        uuid = graphene.UUID()
-        approved = graphene.Boolean()
+    expense = graphene.Field(ExpenseNode)
 
-    def mutate(self, info, uuid, approved):
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, **input):
+
+        uuid = input.get('uuid')
 
         try:
             expense = Expense.objects.get(pk=uuid)
@@ -54,17 +51,11 @@ class ExpenseMutation(graphene.Mutation):
         except Expense.DoesNotExist:
             raise GraphQLError("This uuid does not exist.")
 
-        expense.approved = approved
+        expense.status = input.get('status')
         expense.save()
 
-        return ExpenseMutation(uuid=expense.uuid,
-                               description=expense.description,
-                               created_at=expense.created_at,
-                               amount=expense.amount,
-                               currency=expense.currency,
-                               employee=expense.employee,
-                               approved=expense.approved)
+        return ExpenseMutation(expense=expense)
 
 
-class Mutation(graphene.ObjectType):
+class Mutation(graphene.AbstractType):
     update_expense = ExpenseMutation.Field()

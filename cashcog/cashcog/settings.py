@@ -16,12 +16,12 @@ import sys
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
 def project_base(f=""):
     return os.path.join(BASE_DIR, f)
 
 
 sys.path.insert(1, project_base())
-sys.path.insert(0, project_base("cashcog/"))
 
 
 # Quick-start development settings - unsuitable for production

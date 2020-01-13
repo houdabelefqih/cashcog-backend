@@ -1,3 +1,6 @@
+from graphql import GraphQLError
+
+from expenses.schema import ExpenseNode, ExpenseFilter
 from .models import Employee
 import graphene
 import django_filters
@@ -14,6 +17,9 @@ class EmployeeFilter(django_filters.FilterSet):
 
 
 class EmployeeNode(DjangoObjectType):
+
+    expenses = DjangoFilterConnectionField(ExpenseNode, filterset_class=ExpenseFilter)
+
     class Meta:
         model = Employee
         interfaces = (graphene.relay.Node,)
