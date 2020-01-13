@@ -46,23 +46,23 @@ Either using a browser (which will redirect to the GraphiQL interface) or using 
  
 - To query expenses based on a specific filter : 
 
-  _Example : I want all expenses that have "deli" in their description with a total amount less than or equal to 100_
+  _Example : I want all expenses that have "tempore" in their description with a total amount less than or equal to 3000_
  
   ```
      query {
-       expenses(description_Icontains: "deli", amount_Lte : 100) {
-         edges {
-           node {
-            uuid
-            description
-            createdAt
-            amount
-            currency
-            status
-           }
+     expenses(description_Icontains: "tempore", amount_Lte : 3000) {
+       edges {
+         node {
+          uuid
+          description
+          createdAt
+          amount
+          currency
+          status
          }
        }
-           }
+     }
+         }
 
   ```
   
@@ -81,13 +81,16 @@ Either using a browser (which will redirect to the GraphiQL interface) or using 
 
 ```
 
- mutation {
-     updateExpense(uuid: "", status: "approved"){
-          uuid
-          description
-          status
-        }
-      }
+mutation {
+  updateExpense(input: {uuid: "00f3c0c4-e97b-41bf-abc5-4ae716af992d",status: "approved"}){
+    expense{
+      uuid
+      description
+      amount
+      status
+    }
+  }
+}
 
 ```
  
@@ -97,17 +100,17 @@ Either using a browser (which will redirect to the GraphiQL interface) or using 
 - To query all employees in the database:
 
 ```
-    query employees{
-      edges{
-        node{
-          uuid
-          firstName
-          lastName
-        }
+ query {
+  employees{
+    edges{
+      node{
+        firstName
+        lastName
+        
       }
     }
-
   }
+}
  ```
  
  - To query employees based on a specific filter : 
@@ -115,16 +118,16 @@ Either using a browser (which will redirect to the GraphiQL interface) or using 
  
   ```
      query {
-       employees(lastName_Istartswith: "A", firstName_Icontains: "Isa") {
-         edges {
-           node {
-             uuid
-             firstName
-             lastName
-           }
-         }
-       }
-           }
+        employees(lastName_Istartswith: "S", firstName_Icontains: "Al") {
+          edges {
+            node {
+              uuid
+              firstName
+              lastName
+            }
+          }
+        }
+      }
 
   ```
   
@@ -136,30 +139,31 @@ Either using a browser (which will redirect to the GraphiQL interface) or using 
   
  - You can also do nested queries/filtering: 
  
- _Example: Give me all employees whose last name starts with an "A", and first name contains "Isa". If they have expenses, only give me the approved ones that were created on Jan 07, 2020 with a total amount <= 100._  
+ _Example: Give me all employees whose last name starts with an "S", and first name contains "al". If they have expenses, only give me the ones with a total amount in the range [1000-4000] in a currency that contains the letter "M"._  
  
   ```
-     query {
-       employees(lastName_Istartswith: "A", firstName_Icontains: "Isa") {
-         edges {
-           node {
-             uuid
-             firstName
-             lastName
-             expenses(amount_Lte : 100, createdAt_Date: "2020-01-07", status: "approved"){
+    query {
+      employees(lastName_Istartswith: "S", firstName_Icontains: "al") {
+        edges {
+          node {
+            uuid
+            firstName
+            lastName
+            expenses(currency_Icontains: "M",amount_Gte: 1000, amount_Lte: 4000) {
               edges {
-                 node {
-                   uuid
-                   description
-                   approved
-                   createdAt
-                 }
+                node {
+                  uuid
+                  description
+                  status
+                  amount
+                  currency
                 }
-               }
               }
-         }
-       }
-     }
+            }
+          }
+        }
+      }
+}
 
   ```
  
